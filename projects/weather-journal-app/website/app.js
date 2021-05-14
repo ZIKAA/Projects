@@ -9,10 +9,10 @@ button.addEventListener('click',  async function eventHandler() {
 	try{
 		getWhetherInfo()
 		.then((input) => {
-			return serverHandler(input)		
+			return saveToServer(input)		
 		})
-		.then((input)=>{
-			updateUiData(input)
+		.then(()=>{
+			updateUiData()
 		})
 	}
 	catch(error)
@@ -20,9 +20,6 @@ button.addEventListener('click',  async function eventHandler() {
 		console.log(error);
 	}
 });
-
-
-/* Function called by event listener */
 
 /* Function to GET Web API Data*/
 async function getWhetherInfo(){
@@ -41,8 +38,7 @@ async function getWhetherInfo(){
 }
 
 /* Function to POST data */
-/* Function to GET Project Data */
-async function serverHandler(input){
+async function saveToServer(input){
 	await fetch('/saveData', {
 		method: 'POST',
 		credentials: 'same-origin', 
@@ -51,6 +47,10 @@ async function serverHandler(input){
 		},
 		body: JSON.stringify(input)  
     });
+}
+
+/* Function to GET Project Data and update UI*/
+async function updateUiData(){	
 	const res= await fetch('/getData', {
 		method: 'GET',
 		credentials: 'same-origin',
@@ -58,13 +58,8 @@ async function serverHandler(input){
 			"Content-Type": 'application/json'
 		}
 	});
-	const output = res.json();
-	return output;
-}
-
-function updateUiData(input){
-	 document.getElementById('temp').innerHTML = 'Temperature: ' + input.temp + ' degC';
-	 document.getElementById('date').innerHTML = 'Date: ' + input.date; 
-     document.getElementById('content').innerHTML = 'Feels: ' + input.feelings;
-	
+	const input = await res.json();
+	document.getElementById('temp').innerHTML = 'Temperature: ' + input.temp + ' degC';
+	document.getElementById('date').innerHTML = 'Date: ' + input.date; 
+	document.getElementById('content').innerHTML = 'Feels: ' + input.feelings;
 }
